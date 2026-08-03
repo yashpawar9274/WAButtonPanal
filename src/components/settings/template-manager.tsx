@@ -776,7 +776,7 @@ export function TemplateManager() {
                   <Input
                     id="template-header-text"
                     aria-label="Header text"
-                    placeholder={t('headerTextPlaceholder')}
+                    placeholder={t('headerTextPlaceholder', { variable: '{{1}}' })}
                     value={form.header_content}
                     onChange={(e) =>
                       setForm({ ...form, header_content: e.target.value })
@@ -788,7 +788,7 @@ export function TemplateManager() {
                     <Input
                       id="template-header-sample"
                       aria-label={t('headerSampleAria')}
-                      placeholder={t('headerSamplePlaceholder')}
+                      placeholder={t('headerSamplePlaceholder', { variable: '{{1}}' })}
                       value={form.header_sample}
                       onChange={(e) =>
                         setForm({ ...form, header_sample: e.target.value })
@@ -865,7 +865,10 @@ export function TemplateManager() {
             <div className="space-y-2">
               <Label className="text-muted-foreground">{t('bodyText')}</Label>
               <Textarea
-                placeholder={t('bodyPlaceholder')}
+                placeholder={t('bodyPlaceholder', {
+                  first: '{{1}}',
+                  second: '{{2}}',
+                })}
                 value={form.body_text}
                 onChange={(e) =>
                   setForm({ ...form, body_text: e.target.value })
@@ -875,7 +878,10 @@ export function TemplateManager() {
                 className="bg-muted border-border text-foreground placeholder:text-muted-foreground resize-none"
               />
               <p className="text-[11px] text-muted-foreground">
-                {t('bodyHint')}
+                {t('bodyHint', {
+                  first: '{{1}}',
+                  second: '{{2}}',
+                })}
               </p>
 
               {bodyVarCount > 0 && (
@@ -1007,7 +1013,7 @@ export function TemplateManager() {
                       {btn.type === 'URL' && (
                         <div className="space-y-1 pl-1">
                           <Input
-                            placeholder={t('urlPlaceholder')}
+                            placeholder={t('urlPlaceholder', { variable: '{{1}}' })}
                             value={btn.url}
                             onChange={(e) =>
                               updateButton(i, { url: e.target.value })
@@ -1016,7 +1022,7 @@ export function TemplateManager() {
                           />
                           {extractVariableIndices(btn.url).length > 0 && (
                             <Input
-                              placeholder={t('urlSamplePlaceholder')}
+                              placeholder={t('urlSamplePlaceholder', { variable: '{{1}}' })}
                               value={btn.example ?? ''}
                               onChange={(e) =>
                                 updateButton(i, { example: e.target.value })
