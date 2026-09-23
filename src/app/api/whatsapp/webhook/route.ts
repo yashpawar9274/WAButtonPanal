@@ -46,6 +46,8 @@ interface WhatsAppMessage {
   sticker?: { id: string; mime_type: string }
   location?: { latitude: number; longitude: number; name?: string; address?: string }
   reaction?: { message_id: string; emoji: string }
+  // Template quick-reply buttons arrive as type="button".
+  button?: { text?: string; payload?: string }
   /**
    * Set when the customer taps a button or list row on an interactive
    * message we sent. `button_reply.id` / `list_reply.id` is whatever id
@@ -649,11 +651,13 @@ async function processMessage(
     'text', 'image', 'document', 'audio', 'video',
     'location', 'template', 'interactive',
   ])
-  const contentType = ALLOWED_CONTENT_TYPES.has(message.type)
-    ? message.type
-    : message.type === 'sticker'
-      ? 'image'   // stickers are images
-      : 'text'    // reaction, unknown → text fallback
+  const contentType = message.type === 'button'
+    ? 'interactive' // template quick-reply button tap
+    : ALLOWED_CONTENT_TYPES.has(message.type)
+      ? message.type
+      : message.type === 'sticker'
+        ? 'image'   // stickers are images
+        : 'text'    // reaction, unknown → text fallback
 
   // Determine whether this is the contact's very first inbound message
   // BEFORE we insert, so the count is accurate. Covers the case where
@@ -951,6 +955,16 @@ async function parseMessageContent(
 
     case 'reaction':
       return { ...empty, contentText: message.reaction?.emoji || null }
+
+    case 'button': {
+      // Meta sends template quick-reply taps as a separate button type.
+      const text = message.button?.text || message.button?.payload
+      return {
+        ...empty,
+        contentText: text || '[Button reply]',
+        interactiveReplyId: message.button?.payload || text || null,
+      }
+    }
 
     case 'interactive': {
       // The customer tapped a reply button or a list row on a message
